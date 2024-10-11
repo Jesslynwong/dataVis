@@ -1,0 +1,6 @@
+#idea-content-outline{
+    display: flex;
+    height: 100%;
+    gap: 50px;
+    padding: 24px;
+}
