@@ -2,14 +2,12 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-09-12 17:08:50
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-11 16:31:09
+ * @LastEditTime: 2024-10-11 17:16:40
  * @FilePath: /dataVis/src/page/Statistics/index.tsx
  */
 import React from "react";
-import { DownOutlined } from "@ant-design/icons";
 import type { TableColumnsType } from "antd";
-import { Badge, Dropdown, Space, Table } from "antd";
-import { log } from "console";
+import { Table } from "antd";
 
 export default function Statistics() {
   interface ExpandedDataType {
