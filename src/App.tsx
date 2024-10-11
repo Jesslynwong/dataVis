@@ -10,14 +10,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UploadDataSource from "./page/UploadDataSource";
 import Statistics from "./page/Statistics";
 import Ideas from "./page/Ideas";
-import MainLayout from "./page/MainLayout";
-
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainLayout />}>
+        <Route path="/">
           <Route index element={<UploadDataSource />} />
           <Route path="statistics" element={<Statistics />} />
           <Route path="ideas" element={<Ideas />} />

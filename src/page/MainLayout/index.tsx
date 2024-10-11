@@ -10,6 +10,9 @@ import type { MenuProps } from "antd";
 import { Outlet } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logo1.jpeg";
+import styled from "styled-components";
+
 const { Header, Content, Footer } = Layout;
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -45,7 +48,7 @@ export default function MainLayout() {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       <Header style={{ display: "flex", alignItems: "center" }}>
-        <div className="demo-logo" />
+        <StyledLogo />
         <Menu
           theme="dark"
           mode="horizontal"
@@ -70,3 +73,9 @@ export default function MainLayout() {
     </Layout>
   );
 }
+
+const StyledLogo = styled.img.attrs({ src: logo, alt: "logo" })`
+  margin-top: 10px;
+  height: 100%;
+  cursor: pointer;
+`;
