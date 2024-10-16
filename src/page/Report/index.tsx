@@ -1,17 +1,86 @@
-import { Button, Card, ConfigProvider, Tabs, TabsProps } from "antd";
+import { Button, Card, ConfigProvider, message, Tabs, TabsProps } from "antd";
 import styled from "styled-components";
-import Statistics from "../Statistics";
-import Ideas from "../Ideas";
-import { useNavigate } from "react-router-dom";
+import Ideas from "./Ideas";
+import { useNavigate, useParams } from "react-router-dom";
 import StatisticsTab from "./StatisticsTab";
-import IdeasTab from "./IdeasTab";
 
-import mockData from "../../stubs/template.json";
+import { useGlobalContext } from "../../App";
+import { useMemo } from "react";
+
+export type Item = {
+  count: number;
+  mean: number;
+  std: number;
+  min: number;
+  "25%": number;
+  "50%": number;
+  "75%": number;
+  max: number;
+  median: number;
+};
+
+export type JsonReport<T extends string = string> = {
+  report: {
+    title: string;
+    missing_values: unknown;
+    outliers: {
+      [K in T]: number[];
+    };
+    analysis_results: {
+      statistical_analysis_fields: T[];
+      x_axis_fields: T[];
+      y_axis_field: T;
+      descriptive_statistics: {
+        [K in T]: Item;
+      };
+      correlation_matrix: {
+        [K in T]: {
+          [K in T]: number;
+        };
+      };
+    };
+  };
+  Ideas: {
+    ideas: {
+      Idea: string;
+      Idea_No: string;
+      Reasoning: string;
+      Solution: string;
+    }[];
+    summary: string;
+  };
+};
+
+export type JsonSource<T extends string = string> = ({
+  [K in T]: number;
+} & {
+  name: string;
+  address: string;
+})[];
 
 export default function Report() {
+  const { uid } = useParams();
+  const { fileList, setFileList } = useGlobalContext();
+
+  const fileResponse = useMemo(() => {
+    const matchedFile = fileList.find((file) => file.uid === uid);
+    return matchedFile?.response.response as {
+      json_report: JsonReport;
+      json_source: JsonSource;
+    };
+  }, [fileList, uid]);
+
+  console.log(">> fileResponse: ", fileResponse);
+
   const navigate = useNavigate();
 
-  const { report } = mockData;
+  if (!fileResponse) {
+    setFileList(fileList.filter((v) => v.uid !== uid));
+    message.error("Unexpected error happened!");
+    navigate("/");
+  }
+
+  const { report, Ideas: ideas } = fileResponse.json_report;
 
   const items: TabsProps["items"] = [
     {
@@ -27,8 +96,13 @@ export default function Report() {
     },
     {
       key: "2",
+      label: "Distributive",
+      children: <div>todo</div>,
+    },
+    {
+      key: "3",
       label: "Ideas",
-      children: <Ideas />,
+      children: <Ideas dataSource={ideas} />,
     },
   ];
 

@@ -8,7 +8,7 @@
 
 import logo from "../../assets/logo1.jpeg";
 
-import { Button, UploadProps, message, Upload } from "antd";
+import { Button, UploadProps, message, Upload, Spin } from "antd";
 
 import { supportedUploadExtension } from "../../config/configuration";
 import styled from "styled-components";
@@ -17,12 +17,14 @@ import {
   CloseOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { createRef, useCallback, useMemo, useState } from "react";
+import { createRef, useCallback, useEffect, useMemo, useState } from "react";
 import { UploadFileStatus } from "antd/es/upload/interface";
 import ItemRender from "./ItemRender";
 import { UploadRef } from "antd/es/upload/Upload";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../App";
+
+const host = "http://120.26.49.230:7777";
 
 const { Dragger } = Upload;
 const SerilizedFileExtension = supportedUploadExtension
@@ -36,6 +38,8 @@ export default function UploadDataSource() {
 
   const [isUploadingWithAnimation, setIsUploadingWithAnimation] =
     useState(false);
+
+  const [processingUid, setProcessingUid] = useState<string | null>(null);
 
   const { fileList: fl, setFileList: setFl } = useGlobalContext();
 
@@ -60,7 +64,6 @@ export default function UploadDataSource() {
       status?: UploadFileStatus;
     }) => {
       switch (status) {
-        //  'error' | 'done' | 'uploading' | 'removed';
         case "error":
           return errorColor ?? defaultColor;
         case "uploading":
@@ -78,7 +81,7 @@ export default function UploadDataSource() {
 
   const goCheckReport = useCallback(
     (uid: string) => {
-      navigate(`/report?fl=${uid}`);
+      navigate(`/report/${uid}`);
     },
     [navigate]
   );
@@ -130,7 +133,7 @@ export default function UploadDataSource() {
   const uploadProps: UploadProps = useMemo(
     () => ({
       name: "file",
-      action: "http://120.26.49.230:7777/FileHanddler",
+      action: `${host}/FileHanddler`,
       listType: "text",
       itemRender,
       disabled: draggerStatus === "uploading",
@@ -153,17 +156,12 @@ export default function UploadDataSource() {
           } else if (file.status === "done") {
             setTimeout(() => {
               setIsUploadingWithAnimation(false);
+              setProcessingUid(file.uid);
             }, 300);
-            setTimeout(() => {
-              goCheckReport(file.uid);
-            }, 400);
           } else if (file.status === "error") {
             setTimeout(() => {
               setIsUploadingWithAnimation(false);
             }, 300);
-            setTimeout(() => {
-              goCheckReport(file.uid);
-            }, 400);
           }
         }
         if (event) {
@@ -173,9 +171,44 @@ export default function UploadDataSource() {
           }
         }
       },
+      data(file) {
+        return { file_uid: file.uid };
+      },
     }),
-    [draggerStatus, fl, goCheckReport, itemRender, setFl]
+    [draggerStatus, fl, itemRender, setFl]
   );
+  const loadReport = async () => {
+    // todo: need to handle empty excel file while fetch api will return 400.
+    const rawRes = await fetch(
+      `${host}/upload_and_process?file_uid=${processingUid}`
+    );
+    if (rawRes.status === 200) {
+      const response: { json_report: string; json_source: string } =
+        await rawRes.json();
+
+      const matchFile = fl.find((file) => file.uid === processingUid);
+      if (matchFile) {
+        response.json_report = jsonizeData(response.json_report);
+        response.json_source = jsonizeData(response.json_source);
+        matchFile.response = {
+          ...(matchFile.response ?? {}),
+          response,
+        };
+        goCheckReport(matchFile.uid);
+      }
+      setProcessingUid(null);
+    } else {
+      setTimeout(() => {
+        loadReport();
+      }, 2000);
+    }
+  };
+
+  useEffect(() => {
+    if (processingUid) {
+      loadReport();
+    }
+  }, [processingUid]);
 
   return (
     <div>
@@ -184,59 +217,63 @@ export default function UploadDataSource() {
       </LogoWrapper>
 
       <UploadWrapper>
-        <DraggerWrapper>
-          <Dragger
-            ref={inputController}
-            {...uploadProps}
-            style={{
-              borderColor: mapStatusToColor({ defaultColor: "#bec0da" }),
-              borderWidth: "2px",
-            }}
-          >
-            <div>
-              <Button
-                loading={isUploadingWithAnimation}
-                icon={<UploadOutlined />}
-                size="large"
-                style={{
-                  border: "none",
-                  backgroundColor: mapStatusToColor({
-                    defaultColor: "#bec0da",
-                  }),
-                  color: "white",
-                  fontWeight: "bolder",
-                }}
-              >
-                {isUploadingWithAnimation
-                  ? "uploading"
-                  : "Click or drag file to this area to upload"}
-              </Button>
-
+        <Spin spinning={!!processingUid} tip={"Processing"}>
+          <DraggerWrapper>
+            <Dragger
+              ref={inputController}
+              {...uploadProps}
+              style={{
+                borderColor: mapStatusToColor({ defaultColor: "#bec0da" }),
+                borderWidth: "2px",
+              }}
+            >
               <div>
-                <p
-                  className="ant-upload-hint"
+                <Button
+                  loading={isUploadingWithAnimation}
+                  icon={<UploadOutlined />}
+                  size="large"
                   style={{
-                    color: mapStatusToColor({ defaultColor: "#bec0da" }),
+                    border: "none",
+                    backgroundColor: mapStatusToColor({
+                      defaultColor: "#bec0da",
+                    }),
+                    color: "white",
+                    fontWeight: "bolder",
                   }}
                 >
-                  Support for an excel file upload with subfix "
-                  {SerilizedFileExtension}
-                  ".
-                  <br />
-                  Strictly prohibited from uploading company data or other
-                  banned files.
-                </p>
+                  {isUploadingWithAnimation
+                    ? "uploading"
+                    : "Click or drag file to this area to upload"}
+                </Button>
+
+                <div>
+                  <p
+                    className="ant-upload-hint"
+                    style={{
+                      color: mapStatusToColor({ defaultColor: "#bec0da" }),
+                    }}
+                  >
+                    Support for an excel file upload with subfix "
+                    {SerilizedFileExtension}
+                    ".
+                    <br />
+                    Strictly prohibited from uploading company data or other
+                    banned files.
+                  </p>
+                </div>
               </div>
-            </div>
-          </Dragger>
-        </DraggerWrapper>
+            </Dragger>
+          </DraggerWrapper>
+        </Spin>
       </UploadWrapper>
     </div>
   );
 }
 
+const jsonizeData = (piece: string) => JSON.parse(piece.replace(/\n/g, ""));
+
 const DraggerWrapper = styled.div`
-  width: 68%;
+  width: 100%;
   height: 200px;
 `;
 

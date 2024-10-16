@@ -39,7 +39,7 @@ const App: React.FC = () => {
             <Route index element={<UploadDataSource />} />
             <Route path="statistics" element={<Statistics />} />
             <Route path="ideas" element={<Ideas />} />
-            <Route path="report" element={<Report />} />
+            <Route path="report/:uid" element={<Report />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -32,28 +32,34 @@ export default function ItemRender({
         </FileNameWrapper>
         <IconWrapper>
           {onEyeClick && (
-            <EyeOutlined
-              style={{ color: "cadetblue", cursor: "pointer" }}
-              alt="Check Statistic"
-              title="Check Statistic"
-              onClick={onEyeClick}
-            />
+            <Hover>
+              <EyeOutlined
+                style={{ color: "cadetblue", cursor: "pointer" }}
+                alt="Check Statistic"
+                title="Check Statistic"
+                onClick={onEyeClick}
+              />
+            </Hover>
           )}
           {onRetry && (
-            <ReloadOutlined
-              style={{ color: "cadetblue", cursor: "pointer" }}
-              alt="Retry"
-              title="Retry"
-              onClick={onRetry}
-            />
+            <Hover>
+              <ReloadOutlined
+                style={{ color: "cadetblue", cursor: "pointer" }}
+                alt="Retry"
+                title="Retry"
+                onClick={onRetry}
+              />
+            </Hover>
           )}
           {onDelete && (
-            <DeleteOutlined
-              style={{ color: "orangered", cursor: "pointer" }}
-              alt="Delete"
-              title="Delete"
-              onClick={onDelete}
-            />
+            <Hover>
+              <DeleteOutlined
+                style={{ color: "orangered", cursor: "pointer" }}
+                alt="Delete"
+                title="Delete"
+                onClick={onDelete}
+              />
+            </Hover>
           )}
         </IconWrapper>
       </ItemRenderWrapper>
@@ -69,6 +75,13 @@ export default function ItemRender({
     </div>
   );
 }
+
+const Hover = styled.div`
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+  }
+`;
 
 const FileNameWrapper = styled.div`
   opacity: 0.6;

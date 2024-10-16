@@ -1,31 +1,13 @@
 import { ExpandAltOutlined } from "@ant-design/icons";
-import { render } from "@testing-library/react";
-import { ConfigProvider, Table, TableProps } from "antd";
+import { Table, TableProps } from "antd";
 import styled from "styled-components";
 import RowRadarChart from "./RowRadarChart";
-import { CorrelationMatrix, DescriptiveStatistics } from "./StatisticsTab";
-
-export type Item = {
-  count: number;
-  mean: number;
-  std: number;
-  min: number;
-  "25%": number;
-  "50%": number;
-  "75%": number;
-  max: number;
-  median: number;
-};
+import { Item, JsonReport } from ".";
 
 type DataType = Item & { key: string; name: string };
 
 interface ReportTableProps {
-  dataSource: {
-    descriptive_statistics: DescriptiveStatistics;
-    correlation_matrix: CorrelationMatrix;
-    x_axis_fields: string[];
-    y_axis_field: string[];
-  };
+  dataSource: JsonReport["report"]["analysis_results"];
 }
 
 export default function ReportTable({ dataSource }: ReportTableProps) {
@@ -37,14 +19,14 @@ export default function ReportTable({ dataSource }: ReportTableProps) {
   } = dataSource;
   const items = [
     "count",
-    "mean",
     "std",
-    "min",
     "25%",
     "50%",
     "75%",
-    "max",
+    "mean",
+    "min",
     "median",
+    "max",
   ] as const;
   const fieldNames = Object.keys(descriptive_statistics);
 
@@ -85,8 +67,6 @@ export default function ReportTable({ dataSource }: ReportTableProps) {
     name: field,
     key: field,
   }));
-
-  console.log(data);
 
   return (
     <TableWrapper>
