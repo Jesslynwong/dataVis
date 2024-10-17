@@ -2,7 +2,7 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-09-12 14:49:09
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-10 14:47:46
+ * @LastEditTime: 2024-10-17 10:34:50
  * @FilePath: /dataVis/src/App.tsx
  */
 import React, {
@@ -15,7 +15,6 @@ import React, {
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import UploadDataSource from "./page/UploadDataSource";
 import Statistics from "./page/Statistics";
-import Ideas from "./page/Ideas";
 import Report from "./page/Report";
 import { UploadFile } from "antd";
 
@@ -37,8 +36,6 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/">
             <Route index element={<UploadDataSource />} />
-            <Route path="statistics" element={<Statistics />} />
-            <Route path="ideas" element={<Ideas />} />
             <Route path="report/:uid" element={<Report />} />
           </Route>
         </Routes>

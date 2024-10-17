@@ -2,7 +2,7 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-09-12 17:09:20
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-11 17:17:16
+ * @LastEditTime: 2024-10-17 10:34:29
  * @FilePath: /dataVis/src/page/Ideas/index.tsx
  */
 import React, { ReactNode } from "react";
