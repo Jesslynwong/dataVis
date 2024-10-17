@@ -1,40 +1,69 @@
-import { DeleteOutlined, ReloadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons";
 import { Progress, UploadFile } from "antd";
-import { useEffect, useState } from "react";
+import { MouseEventHandler } from "react";
 import styled from "styled-components";
 
 interface ItemRenderProps {
   file: UploadFile;
   progress?: number;
   showProgress?: boolean;
+  filenameColor?: string;
+  slot?: React.ReactNode;
+  onRetry?: MouseEventHandler<HTMLSpanElement>;
+  onEyeClick?: MouseEventHandler<HTMLSpanElement>;
+  onDelete?: MouseEventHandler<HTMLSpanElement>;
 }
 export default function ItemRender({
   file,
   progress,
   showProgress,
+  filenameColor,
+  slot,
+  onRetry,
+  onDelete,
+  onEyeClick,
 }: ItemRenderProps) {
-  const [isShowProgress, setIsShowProgress] = useState(showProgress);
-
-  useEffect(() => {
-    if (showProgress && progress === 100) {
-      setTimeout(() => {
-        setIsShowProgress(false);
-      }, 400);
-    }
-  }, [progress]);
-
   return (
     <div>
       <ItemRenderWrapper>
-        <div>{file.name}</div>
-        <div>
-          <ReloadOutlined />
-        </div>
-        <div>
-          <DeleteOutlined />
-        </div>
+        <FileNameWrapper style={{ color: filenameColor }}>
+          <span style={{ marginRight: "4px" }}>{slot}</span>
+          {file.name}
+        </FileNameWrapper>
+        <IconWrapper>
+          {onEyeClick && (
+            <Hover>
+              <EyeOutlined
+                style={{ color: "cadetblue", cursor: "pointer" }}
+                alt="Check Statistic"
+                title="Check Statistic"
+                onClick={onEyeClick}
+              />
+            </Hover>
+          )}
+          {onRetry && (
+            <Hover>
+              <ReloadOutlined
+                style={{ color: "cadetblue", cursor: "pointer" }}
+                alt="Retry"
+                title="Retry"
+                onClick={onRetry}
+              />
+            </Hover>
+          )}
+          {onDelete && (
+            <Hover>
+              <DeleteOutlined
+                style={{ color: "orangered", cursor: "pointer" }}
+                alt="Delete"
+                title="Delete"
+                onClick={onDelete}
+              />
+            </Hover>
+          )}
+        </IconWrapper>
       </ItemRenderWrapper>
-      {isShowProgress && (
+      {showProgress && (
         <Progress
           showInfo={false}
           percent={progress}
@@ -47,6 +76,25 @@ export default function ItemRender({
   );
 }
 
+const Hover = styled.div`
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const FileNameWrapper = styled.div`
+  opacity: 0.6;
+  cursor: pointer;
+  font-weight: 500;
+`;
+
+const IconWrapper = styled.div`
+  display: flex;
+  gap: 6px;
+`;
+
 const ItemRenderWrapper = styled.div`
   display: flex;
+  justify-content: space-between;
 `;
