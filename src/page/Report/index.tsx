@@ -7,6 +7,8 @@ import StatisticsTab from "./StatisticsTab";
 import { useGlobalContext } from "../../App";
 import { useMemo } from "react";
 
+import template from "../../stubs/template.json";
+
 export type Item = {
   count: number;
   mean: number;
@@ -59,40 +61,36 @@ export type JsonSource<T extends string = string> = ({
 })[];
 
 export default function Report() {
-  const { uid } = useParams();
-  const { fileList, setFileList } = useGlobalContext();
+  // const { uid } = useParams();
+  // const { fileList, setFileList } = useGlobalContext();
 
-  const fileResponse = useMemo(() => {
-    const matchedFile = fileList.find((file) => file.uid === uid);
-    return matchedFile?.response.response as {
-      json_report: JsonReport;
-      json_source: JsonSource;
-    };
-  }, [fileList, uid]);
+  // const fileResponse = useMemo(() => {
+  //   const matchedFile = fileList.find((file) => file.uid === uid);
+  //   return matchedFile?.response.response as {
+  //     json_report: JsonReport;
+  //     json_source: JsonSource;
+  //   };
+  // }, [fileList, uid]);
 
-  console.log(">> fileResponse: ", fileResponse);
+  // console.log(">> fileResponse: ", fileResponse);
 
   const navigate = useNavigate();
 
-  if (!fileResponse) {
-    setFileList(fileList.filter((v) => v.uid !== uid));
-    message.error("Unexpected error happened!");
-    navigate("/");
-  }
+  // if (!fileResponse) {
+  //   setFileList(fileList.filter((v) => v.uid !== uid));
+  //   message.error("Unexpected error happened!");
+  //   navigate("/");
+  // }
 
-  const { report, Ideas: ideas } = fileResponse.json_report;
+  // const { report, Ideas: ideas } = fileResponse.json_report;
+
+  const { report, Ideas: ideas } = template;
 
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: "Statistics",
-      children: (
-        <StatisticsTab
-          dataSource={{
-            ...report.analysis_results,
-          }}
-        />
-      ),
+      children: <StatisticsTab dataSource={report.analysis_results} />,
     },
     {
       key: "2",

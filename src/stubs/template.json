@@ -20,7 +20,7 @@
         "Venture capital investment amount"
       ],
       "x_axis_fields": ["age", "liability", "Average monthly expenditure"],
-      "y_axis_field": ["deposit"],
+      "y_axis_field": "deposit",
       "descriptive_statistics": {
         "deposit": {
           "count": 99.0,

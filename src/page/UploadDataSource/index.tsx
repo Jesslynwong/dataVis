@@ -280,6 +280,9 @@ const DraggerWrapper = styled.div`
 const UploadWrapper = styled.section`
   display: flex;
   justify-content: center;
+  > div {
+    width: 68%;
+  }
 `;
 
 const LogoWrapper = styled.section`
