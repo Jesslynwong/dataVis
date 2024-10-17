@@ -1,16 +1,13 @@
 import { JsonReport } from ".";
-import ReportTable from "./ReportTable";
+import StatisticsTable from "./StatisticsTable";
 
 interface StatisticsTabProps {
-  dataSource: JsonReport["report"]["analysis_results"];
+  dataSource: Pick<JsonReport["report"], "analysis_results" | "outliers">;
 }
 export default function StatisticsTab({ dataSource }: StatisticsTabProps) {
   return (
     <div>
-      <div>
-        {/* <SeriesLineChart data={dataSource.descriptive_statistics} /> */}
-        <ReportTable dataSource={dataSource} />
-      </div>
+      <StatisticsTable dataSource={dataSource} />
     </div>
   );
 }

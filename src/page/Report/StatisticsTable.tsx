@@ -1,22 +1,29 @@
-import { ExpandAltOutlined } from "@ant-design/icons";
-import { Table, TableProps } from "antd";
+import {
+  BorderBottomOutlined,
+  ExpandAltOutlined,
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+} from "@ant-design/icons";
+import { Table, TableProps, Tooltip } from "antd";
 import styled from "styled-components";
 import RowRadarChart from "./RowRadarChart";
 import { Item, JsonReport } from ".";
 
 type DataType = Item & { key: string; name: string };
 
-interface ReportTableProps {
-  dataSource: JsonReport["report"]["analysis_results"];
+interface StatisticsTableProps {
+  dataSource: Pick<JsonReport["report"], "analysis_results" | "outliers">;
 }
 
-export default function ReportTable({ dataSource }: ReportTableProps) {
+export default function StatisticsTable({
+  dataSource: { analysis_results, outliers },
+}: StatisticsTableProps) {
   const {
     descriptive_statistics,
     correlation_matrix,
     x_axis_fields,
     y_axis_field,
-  } = dataSource;
+  } = analysis_results;
   const items = [
     "count",
     "std",
@@ -31,6 +38,20 @@ export default function ReportTable({ dataSource }: ReportTableProps) {
   const fieldNames = Object.keys(descriptive_statistics);
 
   const columns: TableProps<DataType>["columns"] = [
+    {
+      title: "Field",
+      dataIndex: "name",
+      align: "center",
+      fixed: "left",
+      render: (text) => <StyledNameFiled>{text}</StyledNameFiled>,
+    },
+    ...items.map((v) => ({
+      title: v,
+      dataIndex: v,
+      sorter: { compare: (a: DataType, b: DataType) => a[v] - b[v] },
+      align: "center" as const,
+      render: (text: string) => <StyledCellValue>{text}</StyledCellValue>,
+    })),
     {
       title: "Axis",
       dataIndex: "name",
@@ -47,25 +68,27 @@ export default function ReportTable({ dataSource }: ReportTableProps) {
       ),
     },
     {
-      title: "Field",
-      dataIndex: "name",
+      title: "Outliers",
+      dataIndex: "outliers",
       align: "center",
-      fixed: "left",
-      render: (text) => <StyledNameFiled>{text}</StyledNameFiled>,
+      render: (data: number[]) => {
+        return (
+          <Tooltip
+            title={`[ ${data.sort((a, b) => a - b).join(", ")} ]`}
+            color={"cyan"}
+          >
+            <BorderBottomOutlined style={{ cursor: "pointer", color:"teal" }} />
+          </Tooltip>
+        );
+      },
     },
-    ...items.map((v) => ({
-      title: v,
-      dataIndex: v,
-      sorter: { compare: (a: DataType, b: DataType) => a[v] - b[v] },
-      align: "center" as const,
-      render: (text: string) => <StyledCellValue>{text}</StyledCellValue>,
-    })),
   ];
 
   const data: DataType[] = fieldNames.map((field) => ({
     ...descriptive_statistics[field],
     name: field,
     key: field,
+    outliers: outliers[field],
   }));
 
   return (
@@ -80,11 +103,18 @@ export default function ReportTable({ dataSource }: ReportTableProps) {
         pagination={false}
         expandable={{
           expandIcon: (props) => (
-            <div style={{ width: "60px" }}>
-              <ExpandAltOutlined
-                style={{ color: "#6e75b3" }}
-                onClick={(e) => props.onExpand(props.record, e)}
-              />
+            <div>
+              {props.expanded ? (
+                <FullscreenExitOutlined
+                  style={{ color: "#b94848" }}
+                  onClick={(e) => props.onExpand(props.record, e)}
+                />
+              ) : (
+                <FullscreenOutlined
+                  style={{ color: "#b94848" }}
+                  onClick={(e) => props.onExpand(props.record, e)}
+                />
+              )}
             </div>
           ),
           expandedRowRender: (data) => (

@@ -4,10 +4,9 @@ import Ideas from "./IdeasTab";
 import { useNavigate, useParams } from "react-router-dom";
 import StatisticsTab from "./StatisticsTab";
 
+import template from "../../stubs/template.json";
 import { useGlobalContext } from "../../App";
 import { useMemo } from "react";
-
-import template from "../../stubs/template.json";
 
 export type Item = {
   count: number;
@@ -61,36 +60,49 @@ export type JsonSource<T extends string = string> = ({
 })[];
 
 export default function Report() {
-  // const { uid } = useParams();
-  // const { fileList, setFileList } = useGlobalContext();
+  const { uid } = useParams();
+  const { fileList, setFileList } = useGlobalContext();
 
-  // const fileResponse = useMemo(() => {
-  //   const matchedFile = fileList.find((file) => file.uid === uid);
-  //   return matchedFile?.response.response as {
-  //     json_report: JsonReport;
-  //     json_source: JsonSource;
-  //   };
-  // }, [fileList, uid]);
+  const fileResponse = useMemo(() => {
+    const matchedFile = fileList.find((file) => file.uid === uid);
+    // eslint-disable-next-line no-constant-condition
+    if (true) {
+      // todo: local mock data
+      return {
+        json_report: template as JsonReport,
+        json_source: [] as JsonSource,
+      };
+    }
+    return matchedFile?.response.response as {
+      json_report: JsonReport;
+      json_source: JsonSource;
+    };
+  }, [fileList, uid]);
 
-  // console.log(">> fileResponse: ", fileResponse);
+  console.log(">> fileResponse: ", fileResponse);
 
   const navigate = useNavigate();
 
-  // if (!fileResponse) {
-  //   setFileList(fileList.filter((v) => v.uid !== uid));
-  //   message.error("Unexpected error happened!");
-  //   navigate("/");
-  // }
+  if (!fileResponse) {
+    setFileList(fileList.filter((v) => v.uid !== uid));
+    message.error("Unexpected error happened!");
+    navigate("/");
+  }
 
-  // const { report, Ideas: ideas } = fileResponse.json_report;
-
-  const { report, Ideas: ideas } = template;
+  const { report, Ideas: ideas } = fileResponse.json_report;
 
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: "Statistics",
-      children: <StatisticsTab dataSource={report.analysis_results} />,
+      children: (
+        <StatisticsTab
+          dataSource={{
+            analysis_results: report.analysis_results,
+            outliers: report.outliers,
+          }}
+        />
+      ),
     },
     {
       key: "2",
