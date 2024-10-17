@@ -1,6 +1,6 @@
 import { Button, Card, ConfigProvider, message, Tabs, TabsProps } from "antd";
 import styled from "styled-components";
-import Ideas from "./Ideas";
+import Ideas from "./IdeasTab";
 import { useNavigate, useParams } from "react-router-dom";
 import StatisticsTab from "./StatisticsTab";
 
