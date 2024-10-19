@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Ideas from "./IdeasTab";
 import { useNavigate, useParams } from "react-router-dom";
 import StatisticsTab from "./StatisticsTab";
+import DistributiveTab from "./DistributiveTab";
 
 import template from "../../stubs/template.json";
 import { useGlobalContext } from "../../App";
@@ -107,7 +108,7 @@ export default function Report() {
     {
       key: "2",
       label: "Distributive",
-      children: <div>todo</div>,
+      children: <DistributiveTab />,
     },
     {
       key: "3",
