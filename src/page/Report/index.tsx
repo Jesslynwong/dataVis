@@ -8,6 +8,7 @@ import DistributiveTab from "./DistributiveTab";
 import template from "../../stubs/template.json";
 import { useGlobalContext } from "../../App";
 import { useMemo } from "react";
+import "./index.css"
 
 export type Item = {
   count: number;
@@ -140,7 +141,7 @@ export default function Report() {
             defaultActiveKey="1"
             items={items}
             tabBarExtraContent={
-              <Button onClick={() => navigate("/")}>Back</Button>
+              <Button id="back_btn" onClick={() => navigate("/")}>Back</Button>
             }
           />
         </Card>
