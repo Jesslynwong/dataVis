@@ -1,4 +1,4 @@
-import { DeleteOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import { Progress, UploadFile } from "antd";
 import { MouseEventHandler } from "react";
 import styled from "styled-components";
@@ -9,7 +9,6 @@ interface ItemRenderProps {
   showProgress?: boolean;
   filenameColor?: string;
   slot?: React.ReactNode;
-  onRetry?: MouseEventHandler<HTMLSpanElement>;
   onEyeClick?: MouseEventHandler<HTMLSpanElement>;
   onDelete?: MouseEventHandler<HTMLSpanElement>;
 }
@@ -19,10 +18,11 @@ export default function ItemRender({
   showProgress,
   filenameColor,
   slot,
-  onRetry,
   onDelete,
   onEyeClick,
 }: ItemRenderProps) {
+  const isProcessingSuccess = file.response?.response?.status === "succeed";
+
   return (
     <div>
       <ItemRenderWrapper>
@@ -31,23 +31,13 @@ export default function ItemRender({
           {file.name}
         </FileNameWrapper>
         <IconWrapper>
-          {onEyeClick && (
+          {onEyeClick && isProcessingSuccess && (
             <Hover>
               <EyeOutlined
                 style={{ color: "cadetblue", cursor: "pointer" }}
                 alt="Check Statistic"
                 title="Check Statistic"
                 onClick={onEyeClick}
-              />
-            </Hover>
-          )}
-          {onRetry && (
-            <Hover>
-              <ReloadOutlined
-                style={{ color: "cadetblue", cursor: "pointer" }}
-                alt="Retry"
-                title="Retry"
-                onClick={onRetry}
               />
             </Hover>
           )}
