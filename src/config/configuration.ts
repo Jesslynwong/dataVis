@@ -1,8 +1,1 @@
-
-export const supportedUploadExtension = [
-    "xls",
-    "xlsx",
-    "xlsb",
-    "xlsm",
-    "csv",
-]
+export const supportedUploadExtension = ["xls", "xlsx"];

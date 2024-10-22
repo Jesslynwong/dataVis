@@ -1,9 +1,6 @@
-import { JsonReport } from ".";
-import StatisticsTable from "./StatisticsTable";
+import StatisticsTable, { StatisticsTableProps } from "./StatisticsTable";
 
-interface StatisticsTabProps {
-  dataSource: Pick<JsonReport["report"], "analysis_results" | "outliers">;
-}
+type StatisticsTabProps = StatisticsTableProps;
 export default function StatisticsTab({ dataSource }: StatisticsTabProps) {
   return (
     <div>

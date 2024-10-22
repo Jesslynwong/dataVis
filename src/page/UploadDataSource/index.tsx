@@ -13,8 +13,8 @@ import { Button, UploadProps, message, Upload, Spin } from "antd";
 import { supportedUploadExtension } from "../../config/configuration";
 import styled from "styled-components";
 import {
-  CheckOutlined,
-  CloseOutlined,
+  CheckCircleFilled,
+  CloseCircleFilled,
   UploadOutlined,
 } from "@ant-design/icons";
 import { createRef, useCallback, useEffect, useMemo, useState } from "react";
@@ -23,6 +23,7 @@ import ItemRender from "./ItemRender";
 import { UploadRef } from "antd/es/upload/Upload";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../App";
+import { jsonizeData } from "../../utils";
 
 const host = "http://120.26.49.230:7777";
 
@@ -94,11 +95,17 @@ export default function UploadDataSource() {
         return null;
       }
       const isCurrentSuccess = currentFile.status === "done";
-      const isCurrentFailed = currentFile.status === "error";
       const isNewOne = file === fileList[fileList.length - 1];
       const filenameColor = mapStatusToColor({
         errorColor: "red",
-        doneColor: "lightseagreen",
+        doneColor:
+          file.response?.response?.status === "succeed"
+            ? "lightseagreen"
+            : file.response?.response?.status === "error"
+            ? "red"
+            : undefined,
+        uploadingColor: "black",
+        defaultColor: "black",
         status: currentFile.status,
       });
       return (
@@ -108,12 +115,13 @@ export default function UploadDataSource() {
           progress={progress}
           filenameColor={filenameColor}
           slot={
-            isCurrentSuccess ? (
-              <CheckOutlined
+            file.response?.response?.status === "succeed" ? (
+              <CheckCircleFilled
                 style={{ color: filenameColor, width: "10px", stroke: "2px" }}
               />
-            ) : isCurrentFailed ? (
-              <CloseOutlined
+            ) : file.response?.response?.status === "error" ||
+              file.status === "error" ? (
+              <CloseCircleFilled
                 style={{ color: filenameColor, width: "10px", stroke: "2px" }}
               />
             ) : undefined
@@ -182,26 +190,28 @@ export default function UploadDataSource() {
     const rawRes = await fetch(
       `${host}/upload_and_process?file_uid=${processingUid}`
     );
-    if (rawRes.status === 200) {
-      const response: { json_report: string; json_source: string } =
-        await rawRes.json();
-
-      const matchFile = fl.find((file) => file.uid === processingUid);
-      if (matchFile) {
-        response.json_report = jsonizeData(response.json_report);
-        response.json_source = jsonizeData(response.json_source);
-        matchFile.response = {
-          ...(matchFile.response ?? {}),
-          response,
-        };
-        goCheckReport(matchFile.uid);
-      }
-      setProcessingUid(null);
-    } else {
-      setTimeout(() => {
-        loadReport();
-      }, 2000);
+    const matchFile = fl.find((file) => file.uid === processingUid);
+    if (!matchFile) {
+      return message.error("Unexpected error!");
     }
+    const response: { json_report: string; json_source: string } =
+      await rawRes.json();
+
+    if (rawRes.status === 200) {
+      response.json_report = jsonizeData(response.json_report);
+      response.json_source = jsonizeData(response.json_source);
+      matchFile.response = {
+        ...(matchFile.response ?? {}),
+        response,
+      };
+      goCheckReport(matchFile.uid);
+    } else {
+      matchFile.response = {
+        ...(matchFile.response ?? {}),
+        response,
+      };
+    }
+    setProcessingUid(null);
   };
 
   useEffect(() => {
@@ -270,8 +280,6 @@ export default function UploadDataSource() {
   );
 }
 
-const jsonizeData = (piece: string) => JSON.parse(piece.replace(/\n/g, ""));
-
 const DraggerWrapper = styled.div`
   width: 100%;
   height: 200px;
@@ -282,6 +290,7 @@ const UploadWrapper = styled.section`
   justify-content: center;
   > div {
     width: 68%;
+    max-width: 750px;
   }
 `;
 

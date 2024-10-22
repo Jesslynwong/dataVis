@@ -7,12 +7,13 @@ import {
 import { Table, TableProps, Tooltip } from "antd";
 import styled from "styled-components";
 import RowRadarChart from "./RowRadarChart";
-import { Item, JsonReport } from ".";
+import { Item, JsonReport, ResponsedObject } from ".";
 
 type DataType = Item & { key: string; name: string };
 
-interface StatisticsTableProps {
-  dataSource: Pick<JsonReport["report"], "analysis_results" | "outliers">;
+export interface StatisticsTableProps {
+  dataSource: Pick<JsonReport["report"], "analysis_results" | "outliers"> &
+    Pick<ResponsedObject, "start_count" | "corr_comment">;
 }
 
 export default function StatisticsTable({
@@ -77,7 +78,9 @@ export default function StatisticsTable({
             title={`[ ${data.sort((a, b) => a - b).join(", ")} ]`}
             color={"cyan"}
           >
-            <BorderBottomOutlined style={{ cursor: "pointer", color:"teal" }} />
+            <BorderBottomOutlined
+              style={{ cursor: "pointer", color: "teal" }}
+            />
           </Tooltip>
         );
       },

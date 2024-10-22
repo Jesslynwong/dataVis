@@ -8,7 +8,7 @@ import DistributiveTab from "./DistributiveTab";
 import template from "../../stubs/template.json";
 import { useGlobalContext } from "../../App";
 import { useMemo } from "react";
-import "./index.css"
+import { jsonizeData } from "../../utils";
 
 export type Item = {
   count: number;
@@ -61,27 +61,41 @@ export type JsonSource<T extends string = string> = ({
   address: string;
 })[];
 
+export interface ResponsedObject<T extends string = string> {
+  status: string;
+  message: string;
+  json_report: JsonReport<T>;
+  json_source: JsonSource<T>;
+  start_count: { [K in T]: number };
+  corr_comment: string;
+}
+
+/* 
+  todo: 
+  1. show start_count
+  2. show corr_comment
+  3. reinforce loading animation 
+
+*/
+
 export default function Report() {
   const { uid } = useParams();
   const { fileList, setFileList } = useGlobalContext();
 
   const fileResponse = useMemo(() => {
     const matchedFile = fileList.find((file) => file.uid === uid);
-    // eslint-disable-next-line no-constant-condition
-    if (true) {
-      // todo: local mock data
-      return {
-        json_report: template as JsonReport,
-        json_source: [] as JsonSource,
-      };
-    }
-    return matchedFile?.response.response as {
-      json_report: JsonReport;
-      json_source: JsonSource;
-    };
-  }, [fileList, uid]);
 
-  console.log(">> fileResponse: ", fileResponse);
+    // todo: remove local mock data
+    return {
+      status: "succeed",
+      message: "message",
+      json_report: jsonizeData(template.json_report),
+      json_source: jsonizeData(template.json_source),
+      start_count: template.start_count,
+      corr_comment: jsonizeData(template.corr_comment),
+    } as ResponsedObject;
+    return matchedFile?.response.response as ResponsedObject;
+  }, [fileList, uid]);
 
   const navigate = useNavigate();
 
@@ -102,13 +116,15 @@ export default function Report() {
           dataSource={{
             analysis_results: report.analysis_results,
             outliers: report.outliers,
+            start_count: fileResponse.start_count,
+            corr_comment: fileResponse.corr_comment,
           }}
         />
       ),
     },
     {
       key: "2",
-      label: "Distributive",
+      label: "Factor Distributive",
       children: <DistributiveTab />,
     },
     {
@@ -129,7 +145,7 @@ export default function Report() {
             Tabs: {
               inkBarColor: "#6e75b3",
               itemSelectedColor: "#6e75b3",
-              itemHoverColor: "#7f8ae8",
+              itemHoverColor: "#6e75b3",
               itemColor: "#bec0da",
               fontSize: 16,
             },
@@ -141,7 +157,7 @@ export default function Report() {
             defaultActiveKey="1"
             items={items}
             tabBarExtraContent={
-              <Button id="back_btn" onClick={() => navigate("/")}>Back</Button>
+              <StyledButton onClick={() => navigate("/")}>Back</StyledButton>
             }
           />
         </Card>
@@ -152,4 +168,13 @@ export default function Report() {
 
 const ReportWrapper = styled.div`
   padding: 20px;
+`;
+
+const StyledButton = styled(Button)`
+  color: #bec0da;
+  border-color: #d1d3eb;
+  &:hover {
+    color: #6e75b3 !important;
+    border-color: #a2a9ea !important;
+  }
 `;
