@@ -8,10 +8,17 @@
 
 import logo from "../../assets/logo1.jpeg";
 
-import { Button, UploadProps, message, Upload, Spin } from "antd";
+import {
+  Button,
+  UploadProps,
+  message,
+  Upload,
+  Spin,
+  ConfigProvider,
+} from "antd";
 
 import { supportedUploadExtension } from "../../config/configuration";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import {
   CheckCircleFilled,
   CloseCircleFilled,
@@ -24,6 +31,13 @@ import { UploadRef } from "antd/es/upload/Upload";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../App";
 import { jsonizeData } from "../../utils";
+import {
+  filterAnimation,
+  SVGWrapper,
+} from "../../components/styled.components";
+import { ReactComponent as Loading } from "../../assets/svgs/loading.svg";
+import { ReactComponent as LogoTexg } from "../../assets/svgs/logo_text.svg";
+import LoadingLogo from "../../components/LoadingLogo";
 
 const host = "http://120.26.49.230:7777";
 
@@ -221,40 +235,49 @@ export default function UploadDataSource() {
   }, [processingUid]);
 
   return (
-    <div>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimaryBorder: "#bec0da",
+          colorBorder: "#bec0da",
+          colorPrimaryHover: "#8a92da",
+        },
+      }}
+    >
       <LogoWrapper>
         <StyledLogo />
       </LogoWrapper>
-
       <UploadWrapper>
-        <Spin spinning={!!processingUid} tip={"Processing"}>
+        {/* <Spin spinning={!!processingUid} tip={"Processing"} > */}
+        <Spin
+          spinning={true}
+          // tip={<LogoTexg />}
+          tip={<LoadingLogo />}
+          indicator={
+            <>
+              <Loading width={"100px"} height={"100px"} fontSize={"100px"} />
+            </>
+          }
+        >
           <DraggerWrapper>
             <Dragger
               ref={inputController}
               {...uploadProps}
               style={{
-                borderColor: mapStatusToColor({ defaultColor: "#bec0da" }),
+                // borderColor: mapStatusToColor({ defaultColor: "#bec0da" }),
                 borderWidth: "2px",
               }}
             >
               <div>
-                <Button
+                <StyledButton
                   loading={isUploadingWithAnimation}
                   icon={<UploadOutlined />}
                   size="large"
-                  style={{
-                    border: "none",
-                    backgroundColor: mapStatusToColor({
-                      defaultColor: "#bec0da",
-                    }),
-                    color: "white",
-                    fontWeight: "bolder",
-                  }}
                 >
                   {isUploadingWithAnimation
                     ? "uploading"
                     : "Click or drag file to this area to upload"}
-                </Button>
+                </StyledButton>
 
                 <div>
                   <p
@@ -276,13 +299,16 @@ export default function UploadDataSource() {
           </DraggerWrapper>
         </Spin>
       </UploadWrapper>
-    </div>
+    </ConfigProvider>
   );
 }
 
 const DraggerWrapper = styled.div`
   width: 100%;
   height: 200px;
+  &:hover > span > div {
+    background-color: rgba(199, 199, 199, 0.2);
+  }
 `;
 
 const UploadWrapper = styled.section`
@@ -292,6 +318,8 @@ const UploadWrapper = styled.section`
     width: 68%;
     max-width: 750px;
   }
+
+  /* animation: ${filterAnimation} 4s ease infinite; */
 `;
 
 const LogoWrapper = styled.section`
@@ -301,7 +329,20 @@ const LogoWrapper = styled.section`
   margin-bottom: -68px;
   opacity: 0.6;
 `;
-const StyledLogo = styled.img.attrs({ src: logo, alt: "logo" })`
-  width: 40%;
+
+const StyledLogo = styled.div`
+  width: 500px;
+  height: 400px;
+  background-size: contain;
+  background-repeat: no-repeat;
   cursor: pointer;
+  background-image: url(${logo});
+  /* animation: ${filterAnimation} 4s ease infinite; */
+`;
+
+const StyledButton = styled(Button)`
+  border: none;
+  background-color: #bec0da;
+  color: white;
+  font-weight: bolder;
 `;

@@ -1,13 +1,14 @@
-import {
-  BorderBottomOutlined,
-  ExpandAltOutlined,
-  FullscreenExitOutlined,
-  FullscreenOutlined,
-} from "@ant-design/icons";
+import { FullscreenExitOutlined, FullscreenOutlined } from "@ant-design/icons";
 import { Table, TableProps, Tooltip } from "antd";
 import styled from "styled-components";
 import RowRadarChart from "./RowRadarChart";
 import { Item, JsonReport, ResponsedObject } from ".";
+import starEmpty from "../../assets/svgs/star_empty.svg";
+import star from "../../assets/svgs/star_02.svg";
+import axisX from "../../assets/svgs/axis_x.svg";
+import axisY from "../../assets/svgs/axis_y.svg";
+import extra from "../../assets/svgs/extra.svg";
+import { StyledImg } from "../../components/styled.components";
 
 type DataType = Item & { key: string; name: string };
 
@@ -17,7 +18,7 @@ export interface StatisticsTableProps {
 }
 
 export default function StatisticsTable({
-  dataSource: { analysis_results, outliers },
+  dataSource: { analysis_results, outliers, start_count, corr_comment },
 }: StatisticsTableProps) {
   const {
     descriptive_statistics,
@@ -46,6 +47,12 @@ export default function StatisticsTable({
       fixed: "left",
       render: (text) => <StyledNameFiled>{text}</StyledNameFiled>,
     },
+    {
+      title: "Stars",
+      align: "center",
+      dataIndex: "start_count",
+      render: (data) => <Stars count={data} />,
+    },
     ...items.map((v) => ({
       title: v,
       dataIndex: v,
@@ -60,11 +67,13 @@ export default function StatisticsTable({
       align: "center",
       render: (text) => (
         <StyledAxisField>
-          {x_axis_fields.includes(text)
-            ? "x"
-            : y_axis_field.includes(text)
-            ? "y"
-            : ""}
+          {x_axis_fields.includes(text) ? (
+            <StyledImg width="20px" heigh="20px" src={axisX} alt="axis_x" />
+          ) : y_axis_field.includes(text) ? (
+            <StyledImg width="20px" heigh="20px" src={axisY} alt="axis_y" />
+          ) : (
+            ""
+          )}
         </StyledAxisField>
       ),
     },
@@ -78,9 +87,7 @@ export default function StatisticsTable({
             title={`[ ${data.sort((a, b) => a - b).join(", ")} ]`}
             color={"cyan"}
           >
-            <BorderBottomOutlined
-              style={{ cursor: "pointer", color: "teal" }}
-            />
+            <StyledImg src={extra} alt="extra" />
           </Tooltip>
         );
       },
@@ -92,6 +99,8 @@ export default function StatisticsTable({
     name: field,
     key: field,
     outliers: outliers[field],
+    start_count: start_count[field] || null,
+    corr_comment: corr_comment,
   }));
 
   return (
@@ -109,12 +118,12 @@ export default function StatisticsTable({
             <div>
               {props.expanded ? (
                 <FullscreenExitOutlined
-                  style={{ color: "#b94848" }}
+                  style={{ color: "#edacd0" }}
                   onClick={(e) => props.onExpand(props.record, e)}
                 />
               ) : (
                 <FullscreenOutlined
-                  style={{ color: "#b94848" }}
+                  style={{ color: "#edacd0" }}
                   onClick={(e) => props.onExpand(props.record, e)}
                 />
               )}
@@ -124,6 +133,7 @@ export default function StatisticsTable({
             <RowRadarChart
               fieldToShow={data.name}
               correlation_matrix={correlation_matrix}
+              corr_comment={corr_comment}
             />
           ),
         }}
@@ -131,6 +141,24 @@ export default function StatisticsTable({
     </TableWrapper>
   );
 }
+
+const Stars = ({
+  count,
+  totalCount = 5,
+}: {
+  count: number;
+  totalCount?: number;
+}) => {
+  return (
+    <div>
+      {!count
+        ? "-"
+        : Array.from({ length: totalCount }).map((_, i) => (
+            <StyledImg src={i < count ? star : starEmpty} alt="star empty" />
+          ))}
+    </div>
+  );
+};
 
 const TableWrapper = styled.div``;
 
@@ -141,12 +169,7 @@ const StyledNameFiled = styled.div`
   font-size: 16px;
 `;
 
-const StyledAxisField = styled.span`
-  font-size: 12px;
-  font-weight: 700;
-  color: #6e75b3;
-  opacity: 0.5;
-`;
+const StyledAxisField = styled.div``;
 
 const StyledCellValue = styled.span`
   color: #4e3d55;
