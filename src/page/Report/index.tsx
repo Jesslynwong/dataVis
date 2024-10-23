@@ -54,12 +54,7 @@ export type JsonReport<T extends string = string> = {
   };
 };
 
-export type JsonSource<T extends string = string> = ({
-  [K in T]: number;
-} & {
-  name: string;
-  address: string;
-})[];
+export type JsonSource = { [key: string]: number | string };
 
 export type RelationShipInsight = {
   Insight: string;
@@ -76,7 +71,7 @@ export interface ResponsedObject<T extends string = string> {
   status: string;
   message: string;
   json_report: JsonReport<T>;
-  json_source: JsonSource<T>;
+  json_source: JsonSource;
   start_count: { [K in T]: number };
   corr_comment: {
     target_variables: {
@@ -144,7 +139,15 @@ export default function Report() {
     {
       key: "2",
       label: "Factor Distributive",
-      children: <DistributiveTab />,
+      children: (
+        <DistributiveTab
+          dataSource={{
+            rawData: fileResponse.json_source,
+            xAxisLabel: report.analysis_results.x_axis_fields,
+            yAxisLabel: report.analysis_results.y_axis_field,
+          }}
+        />
+      ),
     },
     {
       key: "3",
