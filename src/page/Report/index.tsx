@@ -61,19 +61,38 @@ export type JsonSource<T extends string = string> = ({
   address: string;
 })[];
 
+export type RelationShipInsight = {
+  Insight: string;
+  Insight_No: string;
+  Variables: string;
+};
+
+export type AnalysisSuggestion = {
+  Suggestion: string;
+  Suggestion_No: string;
+};
+
 export interface ResponsedObject<T extends string = string> {
   status: string;
   message: string;
   json_report: JsonReport<T>;
   json_source: JsonSource<T>;
   start_count: { [K in T]: number };
-  corr_comment: string;
+  corr_comment: {
+    target_variables: {
+      [K in T]: {
+        explanation: string;
+        relationship_insights: RelationShipInsight[];
+        analysis_suggestions: AnalysisSuggestion[];
+      };
+    };
+  };
 }
 
 /* 
   todo: 
-  1. show start_count
-  2. show corr_comment
+  1. show start_count - done
+  2. show corr_comment - done
   3. reinforce loading animation 
 
 */
