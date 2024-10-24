@@ -109,21 +109,19 @@ export default function StatisticsTable({
         columns={columns}
         dataSource={data}
         bordered
-        // title={() => "Header"}
         scroll={{ x: "max-content" }}
-        // size="middle"
         pagination={false}
         expandable={{
           expandIcon: (props) => (
             <div>
               {props.expanded ? (
                 <FullscreenExitOutlined
-                  style={{ color: "#edacd0" }}
+                  style={{ color: "#204448", opacity: 0.6 }}
                   onClick={(e) => props.onExpand(props.record, e)}
                 />
               ) : (
                 <FullscreenOutlined
-                  style={{ color: "#edacd0" }}
+                  style={{ color: "#204448", opacity: 0.6 }}
                   onClick={(e) => props.onExpand(props.record, e)}
                 />
               )}
@@ -154,7 +152,11 @@ const Stars = ({
       {!count
         ? "-"
         : Array.from({ length: totalCount }).map((_, i) => (
-            <StyledImg src={i < count ? star : starEmpty} alt="star empty" />
+            <StyledImg
+              style={{ opacity: 1 }}
+              src={i < count ? star : starEmpty}
+              alt="star empty"
+            />
           ))}
     </div>
   );
