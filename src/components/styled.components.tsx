@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 
 export const StyledImg = styled.img<{
   heigh?: string;
@@ -32,19 +32,5 @@ export const SVGWrapper = styled.div<{
   > svg {
     width: 100%;
     height: 100%;
-  }
-`;
-
-export const filterAnimation = keyframes`
-  0% {
-    filter: contrast(175%) opacity(80%) saturate(100%) hue-rotate(0);
-  }
- 
-  50% {
-    filter: contrast(100%) opacity(100%) saturate(200%) hue-rotate(180deg);
-  }
-
-  100% {
-    filter:  contrast(175%) opacity(80%) saturate(100%) hue-rotate(0);
   }
 `;
