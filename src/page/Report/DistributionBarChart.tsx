@@ -2,7 +2,7 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-10-18 14:18:18
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-19 12:35:32
+ * @LastEditTime: 2024-10-24 11:47:41
  * @FilePath: /dataVis/src/page/Report/DistributionBarChart.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -30,6 +30,7 @@ export interface DistributionBarChartProps {
     xAxisLabel: number[];
     yValue: number[];
   };
+  color: string;
 }
 
 export type BarChartDataProps = Pick<
@@ -39,11 +40,12 @@ export type BarChartDataProps = Pick<
 
 export default function DistributionBarChart({
   data,
+  color,
 }: DistributionBarChartProps) {
   return (
     <ReactEChartsCore
       echarts={echarts}
-      option={getOption(data)}
+      option={getOption(data, color)}
       notMerge={true}
       lazyUpdate={true}
       theme={"theme_name"}
@@ -54,7 +56,7 @@ export default function DistributionBarChart({
   );
 }
 
-function getOption(data: BarChartDataProps) {
+function getOption(data: BarChartDataProps, color: string) {
   return {
     tooltip: {
       trigger: "axis",
@@ -65,14 +67,8 @@ function getOption(data: BarChartDataProps) {
         },
       },
       formatter: function (params: { value: any }[]) {
-        return `🔘 frequency: ${params[0].value}`;
+        return `• frequency: ${params[0].value}`;
       },
-    },
-    grid: {
-      left: "3%",
-      right: "4%",
-      bottom: "3%",
-      containLabel: true,
     },
     xAxis: [
       {
@@ -96,7 +92,7 @@ function getOption(data: BarChartDataProps) {
         data: data.yValue,
         type: "bar",
         barCategoryGap: "20%",
-        itemStyle: {},
+        itemStyle: { color },
         xAxisIndex: 0,
         backgroundStyle: {
           color: "rgba(220, 220, 220, 0.8)",

@@ -2,7 +2,7 @@
  * @Author: Jesslynwong jesslynwjx@gmail.com
  * @Date: 2024-10-17 10:06:08
  * @LastEditors: Jesslynwong jesslynwjx@gmail.com
- * @LastEditTime: 2024-10-23 21:15:50
+ * @LastEditTime: 2024-10-24 11:44:58
  * @FilePath: /dataVis/src/page/Report/DistributiveTab.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -16,6 +16,7 @@ import DistributiveBarChart, {
 } from "./DistributionBarChart";
 import DistributionScatterChart from "./DistributionScatterChart";
 import { JsonSource } from "./index";
+import { getColor } from "../../utils/colors";
 const attrs = ["deposit", "age", "liability"];
 const mockdata: BarChartDataProps[] = [
   {
@@ -29,6 +30,10 @@ const mockdata: BarChartDataProps[] = [
   {
     xAxisLabel: [0, 1, 2, 3, 4, 5, 6, 7],
     yValue: [120, 200, 150, 80, 70, 110, 130],
+  },
+  {
+    xAxisLabel: [0, 1, 2, 3, 4, 5, ],
+    yValue: [120, 200, 150, 80, 70],
   },
 ];
 
@@ -72,13 +77,16 @@ export default function DistributiveTab({ dataSource }: DistributiveTabProps) {
         </a>
       </Dropdown>
       {/* use other api data */}
-      {/* <DistributiveBarChart data={mockdata[selectedNameIdx]} /> */}
+      <DistributiveBarChart data={mockdata[selectedNameIdx]} color={getColor(selectedNameIdx)}/>
       {selectedNameIdx !== selectiveAttr.length - 1 && (
         <DistributionScatterChart
           data={get2Darr(
             rawData[selectiveAttr[selectedNameIdx]] as unknown as Cal2Darr,
             rawData[yAxisLabel] as unknown as Cal2Darr
           )}
+          xAxisTitle={xAxisLabel[selectedNameIdx]}
+          yAxisTitle={yAxisLabel}
+          color={getColor(selectedNameIdx)}
         />
       )}
     </>
